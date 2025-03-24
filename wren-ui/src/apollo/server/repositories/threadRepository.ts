@@ -18,6 +18,7 @@ export interface Thread {
   id: number; // ID
   projectId: number; // Reference to project.id
   summary: string; // Thread summary
+  appKey?: string; // app key
 
   // recommend question
   queryId?: string; // Query ID

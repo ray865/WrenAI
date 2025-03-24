@@ -28,6 +28,7 @@ import {
 } from '../utils/model';
 import { CompactTable, PreviewDataResponse } from '@server/services';
 import { TelemetryEvent } from '../telemetry/telemetry';
+import { getAppKeyFromContext } from '../apps/util';
 
 const logger = getLogger('ModelResolver');
 logger.level = 'debug';
@@ -822,6 +823,7 @@ export class ModelResolver {
       limit: 1,
       modelingOnly: false,
       manifest,
+      appKey: response.appKey,
     });
 
     if (isEmpty(columns)) {
@@ -884,6 +886,7 @@ export class ModelResolver {
   }
 
   public async previewModelData(_root: any, args: any, ctx: IContext) {
+    const appKey = await getAppKeyFromContext(ctx);
     const modelId = args.where.id;
     const model = await ctx.modelRepository.findOneBy({ id: modelId });
     if (!model) {
@@ -895,17 +898,20 @@ export class ModelResolver {
       model.id,
     ]);
     const sql = `select ${getPreviewColumnsStr(modelColumns)} from "${model.referenceName}"`;
+    console.log('manifest', JSON.stringify(manifest), 'sql', sql);
 
     const data = (await ctx.queryService.preview(sql, {
       project,
       modelingOnly: false,
       manifest,
+      appKey,
     })) as PreviewDataResponse;
 
     return data;
   }
 
   public async previewViewData(_root: any, args: any, ctx: IContext) {
+    const appKey = await getAppKeyFromContext(ctx);
     const { id: viewId, limit } = args.where;
     const view = await ctx.viewRepository.findOneBy({ id: viewId });
     if (!view) {
@@ -919,6 +925,7 @@ export class ModelResolver {
       limit,
       manifest,
       modelingOnly: false,
+      appKey,
     })) as PreviewDataResponse;
     return data;
   }
@@ -931,6 +938,10 @@ export class ModelResolver {
     ctx: IContext,
   ) {
     const { sql, projectId, limit, dryRun } = args.data;
+    let appKey = '';
+    if (!dryRun) {
+      appKey = await getAppKeyFromContext(ctx);
+    }
     const project = projectId
       ? await ctx.projectService.getProjectById(projectId)
       : await ctx.projectService.getCurrentProject();
@@ -941,6 +952,7 @@ export class ModelResolver {
       modelingOnly: false,
       manifest,
       dryRun,
+      appKey,
     });
   }
 

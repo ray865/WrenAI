@@ -701,7 +701,11 @@ export class ProjectResolver {
 
     // create models
     const modelValues = selectedTables.map((table) => {
-      const properties = table?.properties;
+      table.name = table.name.split('.').pop() || table.name;
+      const properties = {
+        ...table?.properties,
+        schema: '',
+      };
       // compactTable contain schema and catalog, these information are for building tableReference in mdl
       const model = {
         projectId: project.id,

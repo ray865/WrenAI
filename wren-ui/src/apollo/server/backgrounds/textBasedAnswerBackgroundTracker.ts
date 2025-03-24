@@ -60,6 +60,12 @@ export class TextBasedAnswerBackgroundTracker {
           ) {
             return;
           }
+          if (!threadResponse.appKey) {
+            logger.error(
+              `No app key found for thread response ${threadResponse.id}`,
+            );
+            return;
+          }
           this.runningJobs.add(threadResponse.id);
 
           // update the status to fetching data
@@ -83,6 +89,7 @@ export class TextBasedAnswerBackgroundTracker {
               manifest: mdl,
               modelingOnly: false,
               limit: 500,
+              appKey: threadResponse.appKey,
             })) as PreviewDataResponse;
           } catch (error) {
             logger.error(`Error when query sql data: ${error}`);

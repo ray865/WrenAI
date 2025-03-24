@@ -38,7 +38,15 @@ export default function ModelMetadata(props: Props) {
   }, [fieldsMap, previewModelDataResult.data]);
 
   const onPreviewData = () => {
-    previewModelData({ variables: { where: { id: modelId } } });
+    previewModelData({
+      variables: { where: { id: modelId } },
+      context: {
+        headers: {
+          // TODO: handle app key
+          'x-app-key': 'MID-E53wKKWTqNzK7ccC',
+        },
+      },
+    });
   };
 
   return (

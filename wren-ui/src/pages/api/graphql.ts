@@ -120,7 +120,7 @@ const bootstrapServer = async () => {
       return defaultApolloErrorHandler(error);
     },
     introspection: process.env.NODE_ENV !== 'production',
-    context: (): IContext => ({
+    context: ({ req }): IContext => ({
       config: serverConfig,
       telemetry,
       // adaptor
@@ -152,6 +152,8 @@ const bootstrapServer = async () => {
       // background trackers
       projectRecommendQuestionBackgroundTracker,
       threadRecommendQuestionBackgroundTracker,
+
+      headers: req.headers,
     }),
   });
   await apolloServer.start();

@@ -27,6 +27,7 @@ import {
 } from '../data';
 import { TelemetryEvent, WrenService } from '../telemetry/telemetry';
 import { TrackedAskingResult } from '../services';
+import { getAppKeyFromContext } from '../apps/util';
 
 const logger = getLogger('AskingResolver');
 logger.level = 'debug';
@@ -158,6 +159,7 @@ export class AskingResolver {
     args: { data: { question: string; threadId?: number } },
     ctx: IContext,
   ): Promise<Task> {
+    const appKey = await getAppKeyFromContext(ctx);
     const { question, threadId } = args.data;
     const project = await ctx.projectService.getCurrentProject();
 
@@ -165,6 +167,7 @@ export class AskingResolver {
     const data = { question };
     const task = await askingService.createAskingTask(data, {
       threadId,
+      appKey,
       language: WrenAILanguage[project.language] || WrenAILanguage.EN,
     });
     ctx.telemetry.sendEvent(TelemetryEvent.HOME_ASK_CANDIDATE, {
@@ -429,6 +432,7 @@ export class AskingResolver {
 
     const task = await askingService.rerunAskingTask(responseId, {
       language: WrenAILanguage[project.language] || WrenAILanguage.EN,
+      appKey: '',
     });
     ctx.telemetry.sendEvent(TelemetryEvent.HOME_RERUN_ASKING_TASK, {
       responseId,

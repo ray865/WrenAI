@@ -286,6 +286,12 @@ export default function useAskPrompt(threadId?: number) {
     try {
       const response = await createAskingTask({
         variables: { data: { question: value, threadId } },
+        context: {
+          headers: {
+            // TODO: handle app key
+            'x-app-key': 'MID-E53wKKWTqNzK7ccC',
+          },
+        },
       });
       await fetchAskingTask({
         variables: { taskId: response.data.createAskingTask.id },

@@ -51,6 +51,7 @@ export interface Task {
 export interface AskingPayload {
   threadId?: number;
   language: string;
+  appKey: string;
 }
 
 export interface AskingTaskInput {
@@ -541,7 +542,7 @@ export class AskingService implements IAskingService {
     previousTaskId?: number,
     threadResponseId?: number,
   ): Promise<Task> {
-    const { threadId, language } = payload;
+    const { threadId, language, appKey } = payload;
     const deployId = await this.getDeployId();
 
     // if it's a follow-up question, then the input will have a threadId
@@ -558,6 +559,7 @@ export class AskingService implements IAskingService {
       rerunFromCancelled,
       previousTaskId,
       threadResponseId,
+      appKey,
     });
     return {
       id: response.queryId,
@@ -575,6 +577,8 @@ export class AskingService implements IAskingService {
     if (!threadResponse) {
       throw new Error(`Thread response ${threadResponseId} not found`);
     }
+
+    payload.appKey = threadResponse.appKey;
 
     // get the original question and ask again
     const question = threadResponse.question;
@@ -633,6 +637,7 @@ export class AskingService implements IAskingService {
     const thread = await this.threadRepository.createOne({
       projectId: id,
       summary: input.question,
+      appKey: input.trackedAskingResult?.appKey,
     });
 
     const threadResponse = await this.threadResponseRepository.createOne({
@@ -640,6 +645,7 @@ export class AskingService implements IAskingService {
       question: input.question,
       sql: input.sql,
       askingTaskId: input.trackedAskingResult?.taskId,
+      appKey: input.trackedAskingResult?.appKey,
     });
 
     // if queryId is provided, update asking task
@@ -696,6 +702,7 @@ export class AskingService implements IAskingService {
       question: input.question,
       sql: input.sql,
       askingTaskId: input.trackedAskingResult?.taskId,
+      appKey: input.trackedAskingResult?.appKey,
     });
 
     // if queryId is provided, update asking task
@@ -874,6 +881,7 @@ export class AskingService implements IAskingService {
         project,
         manifest: mdl,
         limit,
+        appKey: response.appKey,
       })) as PreviewDataResponse;
       this.telemetry.sendEvent(eventName, { sql: response.sql });
       return data;
@@ -916,6 +924,7 @@ export class AskingService implements IAskingService {
         project,
         manifest: mdl,
         limit,
+        appKey: response.appKey,
       })) as PreviewDataResponse;
       this.telemetry.sendEvent(eventName, { sql });
       return data;

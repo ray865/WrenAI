@@ -198,6 +198,7 @@ export class IbisAdaptor implements IIbisAdaptor {
     const { dataSource, mdl } = options;
     const connectionInfo = this.updateConnectionInfo(options.connectionInfo);
     const ibisConnectionInfo = toIbisConnectionInfo(dataSource, connectionInfo);
+    logger.debug('ibisConnectionInfo', ibisConnectionInfo, 'query', query);
     const body = {
       sql: query,
       connectionInfo: ibisConnectionInfo,

@@ -11,6 +11,8 @@ import {
 import { getLogger } from '@server/utils';
 import { Project } from '../repositories';
 import { PostHogTelemetry, TelemetryEvent } from '../telemetry/telemetry';
+// import { checkValidAppKey } from '../apps/keys';
+import { getEncryptedDBName } from '../apps/db';
 
 const logger = getLogger('QueryService');
 logger.level = 'debug';
@@ -38,6 +40,7 @@ export interface PreviewOptions {
   manifest: Manifest;
   limit?: number;
   dryRun?: boolean;
+  appKey: string;
 }
 
 export interface SqlValidateOptions {
@@ -93,8 +96,29 @@ export class QueryService implements IQueryService {
     sql: string,
     options: PreviewOptions,
   ): Promise<IbisResponse | PreviewDataResponse | boolean> {
-    const { project, manifest: mdl, limit, dryRun } = options;
+    const { project, manifest: mdl, limit, dryRun, appKey } = options;
+    if (!appKey) {
+      logger.error('App key is required for preview');
+      return false;
+    }
+    // TODO check app key
+    // if (!(await checkValidAppKey(appKey))) {
+    //   logger.error('Invalid app key for preview');
+    //   return false;
+    // }
+
     const { type: dataSource, connectionInfo } = project;
+    if (
+      [DataSourceName.CLICK_HOUSE, DataSourceName.POSTGRES].includes(dataSource)
+    ) {
+      connectionInfo['database'] = await getEncryptedDBName(appKey);
+    }
+    logger.debug(
+      `Previewing sql: ${sql}, dataSource: ${dataSource}, connectionInfo: ${JSON.stringify(
+        connectionInfo,
+      )}}`,
+    );
+
     if (this.useEngine(dataSource)) {
       if (dryRun) {
         logger.debug('Using wren engine to dry run');
@@ -204,6 +228,11 @@ export class QueryService implements IQueryService {
     limit: number,
   ): Promise<PreviewDataResponse> {
     const event = TelemetryEvent.IBIS_QUERY;
+    logger.debug(
+      `Using ibis adaptor to query: ${sql}, dataSource: ${dataSource}, connectionInfo: ${JSON.stringify(
+        connectionInfo,
+      )}}`,
+    );
     try {
       const res = await this.ibisAdaptor.query(sql, {
         dataSource,

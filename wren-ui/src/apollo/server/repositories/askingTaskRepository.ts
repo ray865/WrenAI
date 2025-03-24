@@ -18,6 +18,7 @@ export interface AskingTask {
   threadResponseId?: number;
   createdAt: Date;
   updatedAt: Date;
+  appKey?: string;
 }
 
 export interface IAskingTaskRepository extends IBasicRepository<AskingTask> {

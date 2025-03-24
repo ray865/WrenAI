@@ -26,12 +26,14 @@ interface TrackedTask {
   isFinalized: boolean;
   threadResponseId?: number;
   rerunFromCancelled?: boolean;
+  appKey: string;
 }
 
 export type TrackedAskingResult = AskResult & {
   taskId?: number;
   queryId: string;
   question: string;
+  appKey: string;
 };
 
 export type CreateAskingTaskInput = AskInput & {
@@ -110,6 +112,7 @@ export class AskingTaskTracker implements IAskingTaskTracker {
       // Start tracking this task
       const task = {
         queryId,
+        appKey: input.appKey,
         lastPolled: Date.now(),
         question: input.query,
         isFinalized: false,
@@ -163,6 +166,7 @@ export class AskingTaskTracker implements IAskingTaskTracker {
         queryId,
         question: trackedTask.question,
         taskId: trackedTask.taskId,
+        appKey: trackedTask.appKey,
       };
     }
 
@@ -408,6 +412,7 @@ export class AskingTaskTracker implements IAskingTaskTracker {
       queryId: queryId || taskRecord?.queryId,
       question: taskRecord?.question,
       taskId: taskRecord?.id,
+      appKey: taskRecord?.appKey,
     };
   }
 
@@ -427,6 +432,7 @@ export class AskingTaskTracker implements IAskingTaskTracker {
       // if record not found, create one
       const task = await this.askingTaskRepository.createOne({
         queryId,
+        appKey: trackedTask.appKey,
         question: trackedTask.question,
         detail: trackedTask.result,
       });

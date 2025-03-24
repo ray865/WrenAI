@@ -7,6 +7,7 @@ import {
 } from '@server/services';
 import { DashboardItem, DashboardItemType } from '@server/repositories';
 import { getLogger } from '@server/utils';
+import { getAppKeyFromContext } from '../apps/util';
 
 const logger = getLogger('DashboardResolver');
 logger.level = 'debug';
@@ -93,6 +94,7 @@ export class DashboardResolver {
     ctx: IContext,
   ): Promise<Record<string, any>[]> {
     const { itemId, limit } = args.data;
+    const appKey = await getAppKeyFromContext(ctx);
     try {
       const item = await ctx.dashboardService.getDashboardItem(itemId);
       const project = await ctx.projectService.getCurrentProject();
@@ -102,6 +104,7 @@ export class DashboardResolver {
         project,
         manifest: mdl,
         limit: limit || DEFAULT_PREVIEW_LIMIT,
+        appKey,
       })) as PreviewDataResponse;
 
       // handle data to [{ column1: value1, column2: value2, ... }]

@@ -75,6 +75,12 @@ export default function QuestionSQLPairModal(props: Props) {
           dryRun: true,
         },
       },
+      context: {
+        headers: {
+          // TODO: handle app key
+          'x-app-key': 'MID-E53wKKWTqNzK7ccC',
+        },
+      },
     });
   };
 
@@ -95,6 +101,12 @@ export default function QuestionSQLPairModal(props: Props) {
           data: {
             sql: sqlValue,
             limit: 50,
+          },
+        },
+        context: {
+          headers: {
+            // TODO: handle app key
+            'x-app-key': 'MID-E53wKKWTqNzK7ccC',
           },
         },
       });
@@ -134,6 +146,12 @@ export default function QuestionSQLPairModal(props: Props) {
       variables: {
         data: {
           sql: sqlValue,
+        },
+      },
+      context: {
+        headers: {
+          // TODO: handle app key
+          'x-app-key': 'MID-E53wKKWTqNzK7ccC',
         },
       },
     });

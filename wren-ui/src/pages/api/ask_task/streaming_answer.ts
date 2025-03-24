@@ -73,13 +73,25 @@ export default async function handler(
     stream.on('data', (chunk) => {
       // pass the chunk directly to the client
       const chunkString = chunk.toString('utf-8');
+      const lines = chunkString.split('\n');
       let message = '';
-      const match = chunkString.match(/data: {"message":"([\s\S]*?)"}/);
-      if (match && match[1]) {
-        message = match[1];
-      } else {
-        console.log(`not able to match: ${chunkString}`);
+      for (const line of lines) {
+        if (line.trim() === '') continue;
+        if (line.startsWith('data: ')) {
+          const jsonStr = line.substring(6);
+          const data = JSON.parse(jsonStr);
+
+          if (data.message) {
+            message += data.message;
+          }
+        }
       }
+      // const match = chunkString.match(/data: {"message":"([\s\S]*?)"}/);
+      // if (match && match[1]) {
+      //   message = match[1];
+      // } else {
+      //   console.log(`not able to match: ${chunkString}`);
+      // }
       contentMap.appendContent(queryId, message);
       res.write(chunk);
     });

@@ -92,6 +92,7 @@ export class SqlPairResolver {
         manifest,
         project,
         dryRun: true,
+        appKey: '', // TODO handle appKey
       });
     } catch (err) {
       throw Errors.create(Errors.GeneralErrorCodes.INVALID_SQL_ERROR, {

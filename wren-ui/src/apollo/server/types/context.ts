@@ -33,6 +33,7 @@ import {
   ThreadRecommendQuestionBackgroundTracker,
 } from '@server/backgrounds';
 import { ISqlPairService } from '../services/sqlPairService';
+import { IncomingHttpHeaders } from 'http';
 
 export interface IContext {
   config: IConfig;
@@ -71,4 +72,6 @@ export interface IContext {
   // background trackers
   projectRecommendQuestionBackgroundTracker: ProjectRecommendQuestionBackgroundTracker;
   threadRecommendQuestionBackgroundTracker: ThreadRecommendQuestionBackgroundTracker;
+
+  headers: IncomingHttpHeaders;
 }
