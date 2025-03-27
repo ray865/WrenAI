@@ -78,7 +78,7 @@ export default function QuestionSQLPairModal(props: Props) {
       context: {
         headers: {
           // TODO: handle app key
-          'x-app-key': 'MID-E53wKKWTqNzK7ccC',
+          'x-app-key': localStorage.getItem('X-APP-KEY'),
         },
       },
     });
@@ -106,7 +106,7 @@ export default function QuestionSQLPairModal(props: Props) {
         context: {
           headers: {
             // TODO: handle app key
-            'x-app-key': 'MID-E53wKKWTqNzK7ccC',
+            'x-app-key': localStorage.getItem('X-APP-KEY'),
           },
         },
       });
@@ -151,7 +151,7 @@ export default function QuestionSQLPairModal(props: Props) {
       context: {
         headers: {
           // TODO: handle app key
-          'x-app-key': 'MID-E53wKKWTqNzK7ccC',
+          'x-app-key': localStorage.getItem('X-APP-KEY'),
         },
       },
     });

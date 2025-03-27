@@ -71,7 +71,15 @@ export class DataSourceMetadataService implements IDataSourceMetadataService {
       const tables = await this.wrenEngineAdaptor.listTables();
       return tables;
     }
-    return await this.ibisAdaptor.getTables(dataSource, connectionInfo);
+    const tables = await this.ibisAdaptor.getTables(dataSource, connectionInfo);
+    return tables
+      .filter((table) => table.name.includes(`${connectionInfo.database}.`))
+      .map((table) => {
+        return {
+          ...table,
+          name: table.name.replace(`${connectionInfo.database}.`, ''),
+        };
+      });
   }
 
   public async listConstraints(

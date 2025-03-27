@@ -289,7 +289,7 @@ export default function useAskPrompt(threadId?: number) {
         context: {
           headers: {
             // TODO: handle app key
-            'x-app-key': 'MID-E53wKKWTqNzK7ccC',
+            'x-app-key': localStorage.getItem('X-APP-KEY'),
           },
         },
       });
